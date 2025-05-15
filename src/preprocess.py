@@ -3,8 +3,8 @@ from scipy.io import loadmat
 
 RAW_DIR       = "data/raw"
 OUT_DIR       = "data/processed"
-WIN_SIZE_SAMP = 30  # 300 ms @ 100 Hz
-STRIDE_SAMP   = 15  # 50 % overlap
+WIN_SIZE_SAMP = 20  # 200 ms @ 100 Hz
+STRIDE_SAMP   = 10  # 50 % overlap
 N_CHANNELS    = 10
 REST_LABEL    = 0
 

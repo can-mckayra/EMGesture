@@ -18,9 +18,8 @@ for i in range(len(restimulus)):
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
-relevant_window = np.array(relevant_window)  # Shape: (samples, channels)
+relevant_window = np.array(relevant_window)
 n_samples, n_channels = relevant_window.shape
 time = np.arange(n_samples)
 
@@ -33,7 +32,6 @@ for ch in range(n_channels):
     z = relevant_window[:, ch]   # EMG amplitude for channel
     ax.plot(time, y, z, label=f'Ch {ch+1}')
 
-# Labels and formatting
 ax.set_xlabel('Time')
 ax.set_ylabel('Channel')
 ax.set_zlabel('Amplitude')
