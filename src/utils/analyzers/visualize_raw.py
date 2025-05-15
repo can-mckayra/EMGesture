@@ -43,7 +43,16 @@ plt.tight_layout()
 plt.show()
 
 # Plot emg[0:441] (rest)
-compare_window = emg[0:441]
+rest_window = []
+
+for i in range(len(restimulus)):
+    if restimulus[i] == 0:
+        rest_window.append(emg[i])
+        if restimulus[i + 1] != 0:
+            break
+
+rest_window = np.array(rest_window)
+compare_window = rest_window
 t = np.arange(compare_window.shape[0])
 n_channels = compare_window.shape[1]
 
@@ -56,7 +65,7 @@ for ch in range(n_channels):
 ax2.set_xlabel('Time')
 ax2.set_ylabel('Channel')
 ax2.set_zlabel('Amplitude')
-ax2.set_title('EMG Window: emg[0:441]')
+ax2.set_title('Rest Window')
 
 plt.tight_layout()
 plt.show()
