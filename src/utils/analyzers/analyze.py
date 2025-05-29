@@ -1,6 +1,6 @@
 from scipy.io import loadmat
 
-file_path = r"/raw/S1_A1_E1.mat"
+file_path = r"C:\Users\HP GAME\PycharmProjects\EMGesture\data\raw\S1_A1_E1.mat"
 mat_data = loadmat(file_path)
 
 print(mat_data.keys())

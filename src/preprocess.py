@@ -3,7 +3,7 @@ from scipy.io import loadmat
 
 RAW_DIR       = "data/raw"
 OUT_DIR       = "data/processed"
-WIN_SIZE_SAMP = 20  # 200 ms @ 100 Hz
+WIN_SIZE_SAMP = 15  # 150 ms @ 100 Hz
 STRIDE_SAMP   = 10  # 50 % overlap
 N_CHANNELS    = 10
 REST_LABEL    = 0
@@ -16,7 +16,7 @@ def zscore(x, eps=1e-8):
 def segment(emg, labels):
     # Return windows (Channels, T,me) and labels.
     X, y = [], []
-    for start in range(0, len(emg) - WIN_SIZE_SAMP + 1, STRIDE_SAMP):
+    for start in range(0, len(emg) - WIN_SIZE_SAMP + 1, WIN_SIZE_SAMP):
         end = start + WIN_SIZE_SAMP
         seg_lab = labels[start:end]
         if np.all(seg_lab == seg_lab[0]):
