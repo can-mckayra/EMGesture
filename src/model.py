@@ -1,36 +1,101 @@
 import torch.nn as nn
+#import torch
 
-class EMGCNN(nn.Module):
-    def __init__(self, num_channels=10, num_classes=53):
-        super(EMGCNN, self).__init__()
-        self.features = nn.Sequential(
-            nn.Conv1d(num_channels, 32, kernel_size=5, padding=2),  # Conv1
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(32, 64, kernel_size=5, padding=2),           # Conv2
-            nn.BatchNorm1d(64),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2)
-        )
-        self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(64 * 5, 128),   # 5 time steps left as input length 20 gets halved twice during the two pooling operations
-            nn.ReLU(),
-            nn.Dropout(0.5),
-            nn.Linear(128, num_classes)
-        )
+class EMGesture(nn.Module):
+
+    """Expects input of shape (N, 1, 15, 10) = (batch, channel, time, electrodes)"""
+
+    def __init__(self, num_classes: int):
+        super().__init__()
+        self.num_electrodes = 10
+        self.time_steps = 15    # 150 ms @ 100 Hz
+        self.relu = nn.ReLU()
+
+        # Block 1 (N, 32, 15, 1)
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=(1, self.num_electrodes))
+
+        # Block 2 (N, 32, 15, 1) -> pool (N, 32, 7, 1)
+        self.conv2 = nn.Conv2d(32, 32, kernel_size=(3, 1), padding=(1, 0))
+        self.pool1 = nn.AvgPool2d(kernel_size=(3, 1), stride=(2, 1))
+
+        # Block 3 (N, 64, 7, 1) -> pool (N, 64, 3, 1)
+        self.conv3 = nn.Conv2d(32, 64, kernel_size=(5, 1), padding=(2, 0))
+        self.pool2 = nn.AvgPool2d(kernel_size=(3, 1), stride=(2, 1))
+
+        # Block 4 (N, 64, 3, 1)
+        self.conv4 = nn.Conv2d(64, 64, kernel_size=(5, 1), padding=(2, 0))
+
+        # Block 5 classifier
+        self.adapt = nn.AdaptiveAvgPool2d((1, 1))
+        self.conv5 = nn.Conv2d(64, num_classes, kernel_size=1)
+
     def forward(self, x):
-        # x shape: (batch, 10, 20)
-        x = self.features(x)
-        x = self.classifier(x)
-        return x
+        x = self.relu(self.conv1(x))
+        x = self.relu(self.conv2(x)); x = self.pool1(x)
+        x = self.relu(self.conv3(x)); x = self.pool2(x)
+        x = self.relu(self.conv4(x))
+        x = self.conv5(self.adapt(x))
+        return x.view(x.size(0), -1) # (N, num_classes)
 
-model = EMGCNN()
+"""
+Text description of the model (taken from the paper):
 
-from torchinfo import summary
+The first block of the net is composed of the following
+parts. First, it includes a convolutional layer composed of 32
+filters. After several tests, including different shapes and sizes,
+the filters were defined as a row of the length of number of
+electrodes. Second, it includes a rectified linear unit as a non-
+linear activation function.
 
-summary(model,
-        input_size=(1, 10, 20),    # (batch_size, num_channels, window_len)
-        col_names=["input_size", "output_size", "num_params"],
-        col_width=18, row_settings=["var_names"])
+The second block of the net is composed of the following
+three parts. The first one is a convolutional layer with 32 filters
+of size 3 × 3. The second one is a non-linear activation function
+(rectified linear unit). The third one is a subsampling layer that
+performs an average pooling with filters of size 3 × 3.
+
+The third block of the net is composed of the following three
+parts. The first one is a convolutional layer with 64 filters of
+size 5 × 5. The second one is a non linear activation function
+(rectified linear unit). The third one is a subsampling layer that
+performs an average pooling with filters of size 3 × 3.
+
+The fourth block of the net is composed of the following two
+parts. The first is a convolutional layer with 64 filters of size
+5 × 1 for the Otto Bock electrodes and size 9 × 1 for the Delsys
+electrodes. The second is a rectified linear unit.
+
+The fifth block of the net is composed of the following two
+parts. The first one is a convolutional layer with filters of size
+1 × 1. The second is a softmaxloss.
+
+Block 1:
+Input: (N, 1, 15, 10)
+Output: (N, 32, 15, 1)
+32 filters of size 1 × 10
+ReLU
+
+Block 2:
+Input: (N, 32, 15, 1)
+Output: (N, 32, 7, 1)
+32 filters of size 3 × 1
+ReLU
+Average Pooling (kernel size 3, stride 2)
+
+Block 3:
+Input: (N, 32, 7, 1)
+Output: (N, 64, 3, 1)
+64 filters of size 5 × 1
+ReLU
+Average Pooling (kernel size 3, stride 2)
+
+Block 4:
+Input: (N, 64, 3, 1)
+Output: (N, 64, 1, 1)
+64 filters of size 5 × 1
+ReLU
+
+Block 5:
+Input: (N, 64, 1, 1)
+Output: (N, num_classes, 1, 1)
+1 filter of size 1 × 1
+"""

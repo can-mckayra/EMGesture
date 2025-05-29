@@ -4,7 +4,7 @@ import numpy as np
 import re
 
 # ---- CONFIG -----------------------------------------------------------------
-ROOT = Path(r"C:\Users\HP GAME\PycharmProjects\EMGesture\data\processed")
+ROOT = Path(r"/processed")
 KEYS = dict(emg="X", label="y")          #  <──  HERE
 TRAIN_RANGE = range(3, 25)
 TEST_RANGE  = range(25, 28)
