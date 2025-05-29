@@ -19,17 +19,18 @@ class EMGestureDataset(Dataset):
     def __getitem__(self, idx):
         return self.X[idx], self.y[idx]
 
-def make_loaders(root: Path, batch_sz: int = 256, val_split: float = 0.10,):
+def make_loaders(root: Path, batch_sz: int = 256, val_split: float = 0.10):
 
     train_ds = EMGestureDataset(root / "train.npz")
     test_ds  = EMGestureDataset(root / "test.npz")
 
-    n_val   = int(len(train_ds) * val_split)
-    n_train = len(train_ds) - n_val
-    train_ds, val_ds = random_split(train_ds, [n_train, n_val], generator=torch.Generator().manual_seed(42))
+    if val_split:
+        n_val   = int(len(train_ds) * val_split)
+        n_train = len(train_ds) - n_val
+        train_ds, val_ds = random_split(train_ds, [n_train, n_val], generator=torch.Generator().manual_seed(42))
+    else: val_ds = None
 
-    def mk(dl_ds, shuf): return DataLoader(
-        dl_ds, batch_size=batch_sz, shuffle=shuf,
-        num_workers=0, pin_memory=True)
+    def mk(dl_ds):
+        return DataLoader(dl_ds, batch_size=batch_sz, pin_memory=True)
 
-    return mk(train_ds, True), (mk(val_ds, False) if val_ds else None), mk(test_ds, False)
+    return mk(train_ds), (mk(val_ds) if val_ds else None), mk(test_ds)

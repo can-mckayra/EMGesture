@@ -3,7 +3,9 @@ import torch
 @torch.no_grad()
 def evaluate(model, loader, criterion, device):
     model.eval()
-    loss_sum = correct = total = 0
+    loss_sum = 0
+    correct = 0
+    total = 0
     for xb, yb in loader:
         xb, yb = xb.to(device), yb.to(device)
         logits = model(xb)
@@ -16,7 +18,9 @@ def evaluate(model, loader, criterion, device):
 
 def train_one_epoch(model, loader, optim, criterion, device):
     model.train()
-    loss_sum = correct = total = 0
+    loss_sum = 0
+    correct = 0
+    total = 0
     for xb, yb in loader:
         xb, yb = xb.to(device), yb.to(device)
         optim.zero_grad(set_to_none=True)

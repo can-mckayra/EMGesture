@@ -1,0 +1,21 @@
+"C:\Users\HP GAME\PycharmProjects\EMGesture\.venv\Scripts\python.exe" "C:\Users\HP GAME\PycharmProjects\EMGesture\src\train.py"
+Ep 01/15  train 1.6401/58.86%  val 1.4806/60.82%  [10.0s]
+Ep 02/15  train 1.4562/61.58%  val 1.4355/61.72%  [9.1s]
+Ep 03/15  train 1.4232/62.27%  val 1.4112/62.38%  [9.2s]
+Ep 04/15  train 1.3998/62.79%  val 1.3903/62.89%  [9.1s]
+Ep 05/15  train 1.3807/63.23%  val 1.3741/63.24%  [9.0s]
+Ep 06/15  train 1.3660/63.58%  val 1.3609/63.56%  [9.1s]
+Ep 07/15  train 1.3534/63.89%  val 1.3492/63.88%  [9.2s]
+Ep 08/15  train 1.3420/64.15%  val 1.3388/64.12%  [9.9s]
+Ep 09/15  train 1.3316/64.40%  val 1.3291/64.32%  [9.3s]
+Ep 10/15  train 1.3217/64.64%  val 1.3202/64.47%  [10.0s]
+Ep 11/15  train 1.3124/64.83%  val 1.3118/64.69%  [9.5s]
+Ep 12/15  train 1.3041/65.04%  val 1.3044/64.90%  [9.1s]
+Ep 13/15  train 1.2964/65.22%  val 1.2975/65.08%  [9.0s]
+Ep 14/15  train 1.2892/65.39%  val 1.2911/65.24%  [9.0s]
+Ep 15/15  train 1.2825/65.56%  val 1.2854/65.42%  [9.0s]
+
+TEST loss 1.4517 acc 62.86%
+Model saved to emgesture.pth
+
+Process finished with exit code 0

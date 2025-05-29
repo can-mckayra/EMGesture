@@ -1,5 +1,4 @@
 import torch.nn as nn
-#import torch
 
 class EMGesture(nn.Module):
 
@@ -8,7 +7,7 @@ class EMGesture(nn.Module):
     def __init__(self, num_classes: int):
         super().__init__()
         self.num_electrodes = 10
-        self.time_steps = 15    # 150 ms @ 100 Hz
+        self.time_steps = 15 # 150 ms @ 100 Hz
         self.relu = nn.ReLU()
 
         # Block 1 (N, 32, 15, 1)

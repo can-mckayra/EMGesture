@@ -3,17 +3,15 @@ from pathlib import Path
 import numpy as np
 import re
 
-# ---- CONFIG -----------------------------------------------------------------
 ROOT = Path(r"/processed")
-KEYS = dict(emg="X", label="y")          #  <──  HERE
+KEYS = dict(emg="X", label="y")
 TRAIN_RANGE = range(3, 25)
 TEST_RANGE  = range(25, 28)
 OUT_TRAIN = ROOT / "train.npz"
 OUT_TEST  = ROOT / "test.npz"
-# -----------------------------------------------------------------------------
 
 def collect_subject_files(root: Path):
-    """Return {subject_idx: Path} for every s*.npz in the folder."""
+    """Return {subject_idx: Path} for every .npz in the folder."""
     patt = re.compile(r"s(\d+)\.npz", flags=re.I)
     mapping = {}
     for fp in root.glob("s*.npz"):
@@ -25,7 +23,6 @@ def collect_subject_files(root: Path):
 def merge_subset(file_paths):
     """Load each .npz and concatenate `emg` and `label` along axis 0."""
     emg_list, label_list = [], []
-    fs_value = None
 
     for fp in sorted(file_paths):
         with np.load(fp) as npz:
@@ -35,13 +32,6 @@ def merge_subset(file_paths):
             # gather
             emg_list.append(emg)
             label_list.append(label)
-
-            # sanity-check fs consistency
-            # fs = int(npz["fs"])
-            # if fs_value is None:
-            #     fs_value = fs
-            # elif fs != fs_value:
-            #     raise ValueError(f"Inconsistent fs: {fp} has {fs} Hz, expected {fs_value} Hz")
 
     emg_all   = np.concatenate(emg_list,   axis=0)
     label_all = np.concatenate(label_list, axis=0)
@@ -66,8 +56,8 @@ def main():
     np.savez_compressed(OUT_TRAIN, **train_data)
     np.savez_compressed(OUT_TEST,  **test_data)
 
-    print(f"✔ Saved {OUT_TRAIN}  →  {train_data['emg'].shape[0]} samples")
-    print(f"✔ Saved {OUT_TEST}   →  {test_data['emg'].shape[0]} samples")
+    print(f"Saved {OUT_TRAIN}  ->  {train_data['emg'].shape[0]} samples")
+    print(f"Saved {OUT_TEST}  ->  {test_data['emg'].shape[0]} samples")
 
 if __name__ == "__main__":
     main()
